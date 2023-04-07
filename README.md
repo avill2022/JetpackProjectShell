@@ -59,7 +59,20 @@ git clone https://github.com/avill2022/JetpackProjectShell
 
 ## Contributing
 
-[Guidelines for contributing to your project]
+# Guidelines for Contributing to JetpackProjectShell
+
+Welcome to JetpackProjectShell! We're excited that you're interested in contributing to our project. Here are some guidelines to help you get started:
+
+## How to Contribute
+
+1. Fork the project repository to your own account.
+2. Create a new branch for your changes and make your modifications.
+3. Test your changes thoroughly to ensure they work as expected.
+4. Submit a pull request to the main project branch with a clear description of the changes you've made and why they're important.
+5. Respond to any feedback or comments from the project maintainers in a timely manner.
+
+Thank you for your interest in contributing to JetpackProjectShell. We look forward to working with you!
+
 
 ## License
 
