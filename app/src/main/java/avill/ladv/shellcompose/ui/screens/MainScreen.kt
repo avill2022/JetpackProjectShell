@@ -1,4 +1,4 @@
-package avill.ladv.shellcompose.ui
+package avill.ladv.shellcompose.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomNavigation
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -29,8 +30,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.Navigator
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import avill.ladv.shellcompose.R
+import avill.ladv.shellcompose.ui.*
+import avill.ladv.shellcompose.ui.navigation.AppScreens
+import avill.ladv.shellcompose.ui.navigation.BottomNavItem
+import avill.ladv.shellcompose.ui.navigation.TopNavigationItem
 import avill.ladv.shellcompose.ui.theme.*
 
 @ExperimentalFoundationApi
@@ -46,29 +56,29 @@ fun MainScreen() {
             ChipSection(chips = listOf("Sweet sleep", "Insomnia", "Depression", "asdfasdfas"))
             CurrentMeditation()
             FeatureSection(
-                features = listOf(
-                    Feature(
+                topNavigationItems = listOf(
+                    TopNavigationItem(
                         title = "Sleep meditation",
                         R.drawable.ic_headphone,
                         BlueViolet1,
                         BlueViolet2,
                         BlueViolet3
                     ),
-                    Feature(
+                    TopNavigationItem(
                         title = "Tips for sleeping",
                         R.drawable.ic_videocam,
                         LightGreen1,
                         LightGreen2,
                         LightGreen3
                     ),
-                    Feature(
+                    TopNavigationItem(
                         title = "Night island",
                         R.drawable.ic_headphone,
                         OrangeYellow1,
                         OrangeYellow2,
                         OrangeYellow3
                     ),
-                    Feature(
+                    TopNavigationItem(
                         title = "Calming sounds",
                         R.drawable.ic_headphone,
                         Beige1,
@@ -78,13 +88,6 @@ fun MainScreen() {
                 )
             )
         }
-        BottomMenu(items = listOf(
-            BottomMenuContent("Home", R.drawable.ic_home),//object asosiate
-            BottomMenuContent("Meditate", R.drawable.ic_bubble),
-            BottomMenuContent("Sleep", R.drawable.ic_moon),
-            BottomMenuContent("Music", R.drawable.ic_music),
-            BottomMenuContent("Profile", R.drawable.ic_profile),
-        ), modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 
@@ -199,7 +202,7 @@ fun ChipSection(
 
 @ExperimentalFoundationApi
 @Composable
-fun FeatureSection(features: List<Feature>) {
+fun FeatureSection(topNavigationItems: List<TopNavigationItem>) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Features",
@@ -212,8 +215,8 @@ fun FeatureSection(features: List<Feature>) {
             contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
             modifier = Modifier.fillMaxHeight()
         ) {
-            items(features.size) {
-                FeatureItem(feature = features[it])
+            items(topNavigationItems.size) {
+                FeatureItem(topNavigationItem = topNavigationItems[it])
             }
         }
     }
@@ -221,14 +224,14 @@ fun FeatureSection(features: List<Feature>) {
 
 @Composable
 fun FeatureItem(
-    feature: Feature
+    topNavigationItem: TopNavigationItem
 ) {
     BoxWithConstraints(
         modifier = Modifier
             .padding(7.5.dp)
             .aspectRatio(1f)
             .clip(RoundedCornerShape(10.dp))
-            .background(feature.darkColor)
+            .background(topNavigationItem.darkColor)
     ) {
 
         val width = constraints.maxWidth
@@ -275,11 +278,11 @@ fun FeatureItem(
         ) {
             drawPath(
                 path = mediumColoredPath,
-                color = feature.mediumColor
+                color = topNavigationItem.mediumColor
             )
             drawPath(
                 path = lightColoredPath,
-                color = feature.lightColor
+                color = topNavigationItem.lightColor
             )
         }
         Box(
@@ -288,15 +291,15 @@ fun FeatureItem(
                 .padding(15.dp)
         ) {
             Text(
-                text = feature.title,
+                text = topNavigationItem.title,
                 style = MaterialTheme.typography.h2,
                 fontSize = 22.sp,
                 lineHeight = 26.sp,
                 modifier = Modifier.align(Alignment.TopStart)
             )
             Icon(
-                painter = painterResource(id = feature.iconId),
-                contentDescription = feature.title,
+                painter = painterResource(id = topNavigationItem.iconId),
+                contentDescription = topNavigationItem.title,
                 tint = Color.White,
                 modifier = Modifier.align(Alignment.BottomStart)
             )
@@ -318,80 +321,11 @@ fun FeatureItem(
     }
 }
 
-@Composable
-fun BottomMenu(
-    items: List<BottomMenuContent>,
-    modifier: Modifier = Modifier,
-    activeHighlightColor: Color = ButtonBlue,
-    activeTextColor: Color = Color.White,
-    inactiveTextColor: Color = AquaBlue,
-    initialSelectedItemIndex: Int = 0
-) {
-    var selectedItemIndex by remember {
-        mutableStateOf(initialSelectedItemIndex)
-    }
-    Row(
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(DeepBlue)
-            .padding(15.dp)
-    ) {
-        items.forEachIndexed { index, item ->
-            BottomMenuItem(
-                item = item,
-                isSelected = index == selectedItemIndex,
-                activeHighlightColor = activeHighlightColor,
-                activeTextColor = activeTextColor,
-                inactiveTextColor = inactiveTextColor
-            ) {
-                selectedItemIndex = index
-            }
-        }
-    }
-}
-
-@Composable
-fun BottomMenuItem(
-    item: BottomMenuContent,
-    isSelected: Boolean = false,//default values
-    activeHighlightColor: Color = ButtonBlue,//default values
-    activeTextColor: Color = Color.White,
-    inactiveTextColor: Color = AquaBlue,
-    onItemClick: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.clickable {
-            onItemClick()
-        }
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(if (isSelected) activeHighlightColor else Color.Transparent)
-                .padding(10.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = item.iconId),
-                contentDescription = item.title,
-                tint = if (isSelected) activeTextColor else inactiveTextColor,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        Text(
-            text = item.title,
-            color = if (isSelected) activeTextColor else inactiveTextColor
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @ExperimentalFoundationApi
 @Composable
 fun HomeScreenPreview(){
-    MainScreen()
+    //MainScreen()
 }
+
+

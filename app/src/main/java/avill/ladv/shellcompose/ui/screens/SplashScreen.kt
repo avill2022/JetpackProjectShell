@@ -1,4 +1,4 @@
-package avill.ladv.shellcompose.ui
+package avill.ladv.shellcompose.ui.screens
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import avill.ladv.shellcompose.R
+import avill.ladv.shellcompose.ui.navigation.AppScreens
+import avill.ladv.shellcompose.ui.standardQuadFromTo
 import avill.ladv.shellcompose.ui.theme.Beige1
 import avill.ladv.shellcompose.ui.theme.BlueViolet2
 import avill.ladv.shellcompose.ui.theme.LightGreen3
